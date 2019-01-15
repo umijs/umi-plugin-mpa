@@ -22,7 +22,7 @@ MPA(multiple-page application) plugin for umi.
 * ✔︎ 支持通过 targets 配置的补丁方案
 * ✔︎ 支持自动查找 src/pages 下的 js 文件为 entry
 * ✔︎ import 的 html 文件会被生成到 dist 目录下
-* ✘︎ Hot Module Replacement
+* ✔︎ Hot Module Replacement
 
 ## Installation
 
