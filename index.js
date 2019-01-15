@@ -80,6 +80,26 @@ module.exports = function (api, options = {}) {
       .options({
         name: options.htmlName || '[name].[ext]',
       });
+
+    webpackConfig.output
+      .chunkFilename(`[name].js`);
+
+    if (options.splitChunks) {
+      assert(
+        typeof options.splitChunks === 'boolean' || isPlainObject(options.splitChunks),
+        `options.splitChunks should be Boolean or Object, but got ${JSON.stringify(options.splitChunks)}`,
+      );
+      webpackConfig.optimization
+        .splitChunks(
+          isPlainObject(opts.splitChunks)
+            ? opts.splitChunks
+            : {
+              chunks: 'all',
+              name: 'vendors',
+              minChunks: 2,
+            }
+        );
+    }
   });
 
   api.modifyAFWebpackOpts(opts => {

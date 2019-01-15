@@ -23,6 +23,7 @@ MPA(multiple-page application) plugin for umi.
 * ✔︎ 支持自动查找 src/pages 下的 js 文件为 entry
 * ✔︎ import 的 html 文件会被生成到 dist 目录下
 * ✔︎ Hot Module Replacement
+* ✔︎ 通过 `splitChunks` 提取公共部分
 
 ## Installation
 
@@ -69,6 +70,15 @@ export default {
 * Default: `[name].[ext]`
 
 可以用 `[name]`、`[path]`、`[hash]` 和 `[ext]`，详见 https://github.com/webpack-contrib/file-loader 。
+
+### splitChunks
+
+配置 webpack 的 splitChunks，用于提取 common 或 vendors 等。
+
+* Type: `Boolean | Object`
+* Default: false
+
+如果值为 `true`，等于配置了 `{ chunks: 'async', name: 'vendors' }`，详见 https://webpack.js.org/plugins/split-chunks-plugin/ 。
 
 ## LICENSE
 

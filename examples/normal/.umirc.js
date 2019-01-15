@@ -1,6 +1,8 @@
 
 export default {
   plugins: [
-    '../../index',
+    ['../../index', {
+      splitChunks: true,
+    }],
   ],
 };
