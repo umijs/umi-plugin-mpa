@@ -8,7 +8,7 @@ MPA(multiple-page application) plugin for umi.
 
 ## Why
 
-有一些基于 [atool-build](https://github.com/ant-tool/atool-build) 或者 [roadhog](https://github.com/sorrycc/roadhog) 的老业务，是传统的 mpa（多页应用），并且他们是真的多页，因为每个页面之间的关系不大，强行套 apa（单页应用）的模式意义并不大，反而多了一些冗余的代码，比如路由。
+有一些基于 [atool-build](https://github.com/ant-tool/atool-build) 或者 [roadhog](https://github.com/sorrycc/roadhog) 的老业务，是传统的 MPA（多页应用），并且他们是真的多页，因为每个页面之间的关系不大，强行套 SPA（单页应用）的模式意义并不大，反而多了一些冗余的代码，比如路由。
 
 另外，atool-build 已停止维护。
 
