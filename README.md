@@ -59,7 +59,7 @@ export default {
 * Type: `Object`
 * Default: null
 
-如果没有设置 entry，会自动查找 `src/pages` 下的 js 或 ts 文件为 entry。 
+如果没有设置 entry，会自动查找 `src/pages` 下的 js 或 ts 文件为 entry 。 
 
 ### htmlName
 
@@ -68,7 +68,7 @@ export default {
 * Type: `String`
 * Default: `[name].[ext]`
 
-可以用 `[name]`、`[path]`、`[hash]` 和 `[ext]`，详见 https://github.com/webpack-contrib/file-loader
+可以用 `[name]`、`[path]`、`[hash]` 和 `[ext]`，详见 https://github.com/webpack-contrib/file-loader 。
 
 ## LICENSE
 
