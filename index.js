@@ -1,6 +1,7 @@
 const { readdirSync } = require('fs');
 const { join, extname, basename } = require('path');
 const assert = require('assert');
+const isPlainObject = require('is-plain-object');
 
 module.exports = function (api, options = {}) {
   const { log, paths } = api;
@@ -25,6 +26,12 @@ module.exports = function (api, options = {}) {
       assert(
         isPlainObject(options.entry),
         `options.entry should be object, but got ${JSON.stringify(options.entry)}`,
+      );
+    }
+    if (options.htmlName) {
+      assert(
+        typeof htmlName === 'string',
+        `opts.htmlName should be string, but got ${JSON.stringify(options.htmlName)}`,
       );
     }
 

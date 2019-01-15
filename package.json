@@ -16,6 +16,7 @@
     "test": "umi-test"
   },
   "dependencies": {
+    "is-plain-object": "^2.0.4"
   },
   "devDependencies": {
     "np": "^3.0.4",
