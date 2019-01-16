@@ -5,10 +5,16 @@ const isPlainObject = require('is-plain-object');
 const deasyncPromise = require('deasync-promise');
 const inquirer = require('inquirer');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
+const semver = require('semver');
 
 module.exports = function (api, options = {}) {
   const { log, paths } = api;
 
+  const umiVersion = process.env.UMI_VERSION;
+  assert(
+    semver.gte(umiVersion, '2.4.3') && semver.lt(umiVersion, '3'),
+    `Your umi version is ${umiVersion}, >=2.4.3 and <3 is required.`,
+  );
   assert(
     !options.entry || isPlainObject(options.entry),
     `options.entry should be object, but got ${JSON.stringify(options.entry)}`,
