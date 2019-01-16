@@ -26,6 +26,7 @@ MPA(multiple-page application) plugin for umi.
 * ✔︎ 通过 `splitChunks` 配置提取公共部分
 * ✔︎ 通过 `html` 配置根据入口文件自动生成 html
 * ✔︎ 通过 `selectEntry` 配置选择部分 entry 以提升调试效率
+* ✔︎ 支持查看 entry 列表，默认是 `index.html`，冲突时切换为 `__index.html`
 
 ## Installation
 

@@ -128,6 +128,7 @@ module.exports = function (api, options = {}) {
         if (existsSync(templateFile)) {
           config.template = templateFile;
         }
+        // 支持在 chunks 里用 <%= page %> 占位
         if (config.chunks) {
           config.chunks.forEach((chunk, i) => {
             if (chunk === '<%= page %>') {
@@ -140,6 +141,23 @@ module.exports = function (api, options = {}) {
         );
       }
     });
+
+    if (isDev && options.html) {
+      let filename = 'index.html';
+      if (Object.keys(webpackConfig.entry).includes('index')) {
+        filename = '__index.html';
+        const port = process.env.PORT || '8000';
+        log.warn(`Since we already have index.html, checkout http://localhost:${port}/${filename} for entry list.`);
+      }
+      webpackConfig.plugins.push(
+        new HTMLWebpackPlugin({
+          template: require.resolve('./templates/entryList.ejs'),
+          entries: Object.keys(webpackConfig.entry),
+          filename,
+          inject: false,
+        }),
+      );
+    }
 
     return webpackConfig;
   });
