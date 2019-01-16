@@ -26,8 +26,8 @@ module.exports = function (api, options = {}) {
     `options.html should be Object, but got ${JSON.stringify(options.html)}`,
   );
   assert(
-    !options.selectEntry || typeof options.selectEntry === 'boolean',
-    `options.selectEntry should be Boolean, but got ${JSON.stringify(options.selectEntry)}`,
+    !options.selectEntry || typeof options.selectEntry === 'boolean' || isPlainObject(options.selectEntry),
+    `options.selectEntry should be Boolean or Object, but got ${JSON.stringify(options.selectEntry)}`,
   );
 
   log.warn(`
@@ -85,6 +85,8 @@ module.exports = function (api, options = {}) {
             validate: (v) => {
               return v.length >= 1 || 'Please choose at least one';
             },
+            pageSize: 18,
+            ...(isPlainObject(options.selectEntry) ? options.selectEntry : {}),
           }
         ]));
         keys.forEach(key => {
@@ -118,7 +120,7 @@ module.exports = function (api, options = {}) {
         const config = {
           template,
           filename: `${key}.html`,
-          chunks: [key],
+          chunks: options.splitChunks === true ? ['vendors', key] : [key],
           ...options.html,
         };
         // 约定 entry 同名的 .ejs 文件为模板文档

@@ -81,7 +81,7 @@ export default {
 * Type: `Boolean | Object`
 * Default: false
 
-如果值为 `true`，等于配置了 `{ chunks: 'async', name: 'vendors' }`，详见 https://webpack.js.org/plugins/split-chunks-plugin/ 。
+如果值为 `true`，等于配置了 `{ chunks: 'async', name: 'vendors' }`，并且 html 的 chunks 会配置为 `["vendors", "<%= page %>"]`，详见 https://webpack.js.org/plugins/split-chunks-plugin/ 。
 
 ### html
 
@@ -112,13 +112,14 @@ export default {
 
 是否开启 entry 选择，以提升开发效率。
 
-* Type: `Boolean`
+* Type: `Boolean | Object`
 * Default: `false`
 
 注：
 
-1. 适用于 entry 量大的项目，只在 dev 时开启
-2. 由于使用了 deasync-promise，所以在入口选择界面上按 Ctrl+C 退出会失败，且进程清理不干净。这时需手动强制退出相关 node 进程。
+1. 值为 Object 时会用于覆盖默认的 inquirer 配置，详见https://github.com/SBoudrias/Inquirer.js#question
+2. 适用于 entry 量大的项目，只在 dev 时开启
+3. 由于使用了 deasync-promise，所以在入口选择界面上按 Ctrl+C 退出会失败，且进程清理不干净。这时需手动强制退出相关 node 进程。
 
 ## LICENSE
 
