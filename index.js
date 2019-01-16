@@ -2,6 +2,9 @@ const { existsSync, readdirSync } = require('fs');
 const { join, extname, basename, dirname } = require('path');
 const assert = require('assert');
 const isPlainObject = require('is-plain-object');
+const deasyncPromise = require('deasync-promise');
+const inquirer = require('inquirer');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = function (api, options = {}) {
   const { log, paths } = api;
@@ -34,6 +37,8 @@ module.exports = function (api, options = {}) {
   // don't add route middleware
   process.env.ROUTE_MIDDLEWARE = 'none';
 
+  const isDev = process.env.NODE_ENV === 'development';
+
   // 提供一个假的 routes 配置，这样就不会走约定式路由，解析 src/pages 目录
   api.modifyDefaultConfig(memo => {
     return { ...memo, routes: [] };
@@ -57,6 +62,31 @@ module.exports = function (api, options = {}) {
         }, {});
     }
 
+    // 支持选择部分 entry 以提升开发效率
+    if (isDev && options.selectEntry) {
+      const keys = Object.keys(webpackConfig.entry);
+      if (keys.length > 1) {
+        const selectedKeys = deasyncPromise(inquirer.prompt([
+          {
+            type: 'checkbox',
+            message: 'Please select your entry pages',
+            name: 'pages',
+            choices: keys.map(v => ({
+              name: v,
+            })),
+            validate: (v) => {
+              return v.length >= 1 || 'Please choose at least one';
+            },
+          }
+        ]));
+        keys.forEach(key => {
+          if (!selectedKeys.pages.includes(key)) {
+            delete webpackConfig.entry[key];
+          }
+        });
+      }
+    }
+
     Object.keys(webpackConfig.entry).forEach(key => {
       const entry = webpackConfig.entry[key];
 
@@ -66,7 +96,7 @@ module.exports = function (api, options = {}) {
         ...(process.env.BABEL_POLYFILL === 'none' ? [] : [`${__dirname}/templates/polyfill.js`]),
         // hmr
         ...(
-          process.env.NODE_ENV === 'development' && hmrScript.includes('webpackHotDevClient.js')
+          isDev && hmrScript.includes('webpackHotDevClient.js')
             ? [hmrScript]
             : []
         ),
@@ -76,7 +106,6 @@ module.exports = function (api, options = {}) {
 
       // html-webpack-plugin
       if (options.html) {
-        const HTMLWebpackPlugin = require('html-webpack-plugin');
         const template = require.resolve('./templates/document.ejs');
         const config = {
           template,

@@ -23,8 +23,9 @@ MPA(multiple-page application) plugin for umi.
 * ✔︎ 支持自动查找 src/pages 下的 js 文件为 entry
 * ✔︎ import 的 html 文件会被生成到 dist 目录下
 * ✔︎ Hot Module Replacement
-* ✔︎ 通过 `splitChunks` 提取公共部分
-* ✔︎ 支持根据入口文件自动生成 html
+* ✔︎ 通过 `splitChunks` 配置提取公共部分
+* ✔︎ 通过 `html` 配置根据入口文件自动生成 html
+* ✔︎ 通过 `selectEntry` 配置选择部分 entry 以提升调试效率
 
 ## Installation
 
@@ -105,6 +106,18 @@ export default {
 * chunks 有一个特殊项为 `<%= page %>`，如果配置了，会被替换为当前 page 名
 
 更多配置方式，详见 https://github.com/jantimon/html-webpack-plugin#options 。
+
+### selectEntry
+
+是否开启 entry 选择，以提升开发效率。
+
+* Type: `Boolean`
+* Default: `false`
+
+注：
+
+1. 适用于 entry 量大的项目，只在 dev 时开启
+2. 由于使用了 deasync-promise，所以在入口选择界面上按 Ctrl+C 退出会失败，且进程清理不干净。这时需手动强制退出相关 node 进程。
 
 ## LICENSE
 
