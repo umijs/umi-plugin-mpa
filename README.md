@@ -14,7 +14,7 @@ MPA(multiple-page application) plugin for umi.
 
 所以，为了让这些老业务能更容易地升级上来，享受新的技术栈，我们提供了 umi-plugin-mpa 来支持多页应用，把 umi 单纯作为 webpack 封装工具来使用。同时，umi 的部分功能会不可用，比如路由、global.js、global.css、app.js 等。
 
-## Feature
+## Features
 
 * ✔︎ 禁用 umi 内置的 HTML 生成
 * ✔︎ 禁用 umi 内置的路由功能
