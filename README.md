@@ -20,7 +20,7 @@ MPA(multiple-page application) plugin for umi.
 * ✔︎ 禁用 umi 内置的路由功能
 * ✔︎ 禁用 umi 默认生成的 entry 配置
 * ✔︎ 支持通过 targets 配置的补丁方案
-* ✔︎ 支持自动查找 src/pages 下的 js 文件为 entry
+* ✔︎ 支持自动查找 `src/pages` 下的 js 文件为 entry
 * ✔︎ import 的 html 文件会被生成到 dist 目录下
 * ✔︎ Hot Module Replacement
 * ✔︎ 通过 `splitChunks` 配置提取公共部分
