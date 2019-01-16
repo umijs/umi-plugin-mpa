@@ -21,6 +21,11 @@ module.exports = function (api, options = {}) {
   // don't add route middleware
   process.env.ROUTE_MIDDLEWARE = 'none';
 
+  // 提供一个假的 routes 配置，这样就不会走约定式路由，解析 src/pages 目录
+  api.modifyDefaultConfig(memo => {
+    return { ...memo, routes: [] };
+  });
+
   api.modifyWebpackConfig(webpackConfig => {
     if (options.entry) {
       assert(
@@ -57,7 +62,7 @@ module.exports = function (api, options = {}) {
       const entry = webpackConfig.entry[key];
       webpackConfig.entry[key] = [
         // polyfill
-        `${__dirname}/templates/polyfill.js`,
+        ...(process.env.BABEL_POLYFILL === 'none' ? [] : [`${__dirname}/templates/polyfill.js`]),
         // hmr
         ...(
           process.env.NODE_ENV === 'development' && hmrScript.includes('webpackHotDevClient.js')
