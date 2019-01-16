@@ -12,7 +12,7 @@ module.exports = function (api, options = {}) {
 
   const umiVersion = process.env.UMI_VERSION;
   assert(
-    semver.gte(umiVersion, '2.4.3') && semver.lt(umiVersion, '3'),
+    semver.gte(umiVersion, '2.4.3') && semver.lt(umiVersion, '3.0.0'),
     `Your umi version is ${umiVersion}, >=2.4.3 and <3 is required.`,
   );
   assert(
@@ -43,6 +43,7 @@ module.exports = function (api, options = {}) {
     2. global.css、global.js 无效
     3. app.js 无效
     4. 不支持 runtimePublicPath
+    5. ...
   `.trim());
   console.log();
 
