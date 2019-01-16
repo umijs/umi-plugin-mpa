@@ -35,6 +35,12 @@ module.exports = function (api, options = {}) {
     !options.selectEntry || typeof options.selectEntry === 'boolean' || isPlainObject(options.selectEntry),
     `options.selectEntry should be Boolean or Object, but got ${JSON.stringify(options.selectEntry)}`,
   );
+  if (options.html && options.html.template) {
+    assert(
+      extname(options.html.template) === '.ejs',
+      `options.html.template should use ejs file, but got options.html.template`,
+    );
+  }
 
   log.warn(`
 [umi-plugin-mpa] 使用 mpa 插件，意味着我们只使用 umi 作为构建工具。所以：
