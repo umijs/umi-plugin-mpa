@@ -18,8 +18,16 @@ module.exports = function (api, options = {}) {
     `options.htmlName should be string, but got ${JSON.stringify(options.htmlName)}`,
   );
   assert(
+    !options.splitChunks || typeof options.splitChunks === 'boolean' || isPlainObject(options.splitChunks),
+    `options.splitChunks should be Boolean or Object, but got ${JSON.stringify(options.splitChunks)}`,
+  );
+  assert(
     !options.html || isPlainObject(options.html),
     `options.html should be Object, but got ${JSON.stringify(options.html)}`,
+  );
+  assert(
+    !options.selectEntry || typeof options.selectEntry === 'boolean',
+    `options.selectEntry should be Boolean, but got ${JSON.stringify(options.selectEntry)}`,
   );
 
   log.warn(`
@@ -149,10 +157,6 @@ module.exports = function (api, options = {}) {
       .chunkFilename(`[name].js`);
 
     if (options.splitChunks) {
-      assert(
-        typeof options.splitChunks === 'boolean' || isPlainObject(options.splitChunks),
-        `options.splitChunks should be Boolean or Object, but got ${JSON.stringify(options.splitChunks)}`,
-      );
       webpackConfig.optimization
         .splitChunks(
           isPlainObject(options.splitChunks)
