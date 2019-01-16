@@ -3,3 +3,4 @@
 /examples/**/dist
 /examples/**/.umi
 /examples/**/.umi-production
+/test/**/dist

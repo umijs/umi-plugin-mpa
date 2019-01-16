@@ -2,7 +2,9 @@
 export default {
   plugins: [
     ['../../index', {
-      splitChunks: true,
+      splitChunks: {
+        minSize: 0,
+      },
     }],
   ],
 };

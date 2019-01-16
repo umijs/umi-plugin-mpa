@@ -24,6 +24,7 @@ MPA(multiple-page application) plugin for umi.
 * ✔︎ import 的 html 文件会被生成到 dist 目录下
 * ✔︎ Hot Module Replacement
 * ✔︎ 通过 `splitChunks` 提取公共部分
+* ✔︎ 支持根据入口文件自动生成 html
 
 ## Installation
 
@@ -79,6 +80,31 @@ export default {
 * Default: false
 
 如果值为 `true`，等于配置了 `{ chunks: 'async', name: 'vendors' }`，详见 https://webpack.js.org/plugins/split-chunks-plugin/ 。
+
+### html
+
+配置给 [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin) 的配置，用于为每个 entry 自动生成 html 文件。
+
+* Type: `Object`
+* Default: `null`
+
+如果有配置，则会基于默认值进行覆盖，
+
+```js
+{
+  template,
+  filename: `${page}.html`,
+  chunks: [page]
+}
+```
+
+其中，
+
+* template 有一个[默认模板](http://github.com/umijs/umi-plugin-mpa/tree/master/templates/document.ejs)，可通过配置进行覆盖
+* 如果有一个和 entry 文件同目录同文件名但后缀为 `.ejs` 的文件，则会用次文件作为其 template，且优先级最高
+* chunks 有一个特殊项为 `<%= page %>`，如果配置了，会被替换为当前 page 名
+
+更多配置方式，详见 https://github.com/jantimon/html-webpack-plugin#options 。
 
 ## LICENSE
 
