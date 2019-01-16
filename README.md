@@ -88,7 +88,7 @@ export default {
 * Type: `Object`
 * Default: `null`
 
-如果有配置，则会基于默认值进行覆盖，
+如有配置，则会基于以下默认值进行覆盖，
 
 ```js
 {
