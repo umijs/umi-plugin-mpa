@@ -1,10 +1,23 @@
-const { readdirSync } = require('fs');
-const { join, extname, basename } = require('path');
+const { existsSync, readdirSync } = require('fs');
+const { join, extname, basename, dirname } = require('path');
 const assert = require('assert');
 const isPlainObject = require('is-plain-object');
 
 module.exports = function (api, options = {}) {
   const { log, paths } = api;
+
+  assert(
+    !options.entry || isPlainObject(options.entry),
+    `options.entry should be object, but got ${JSON.stringify(options.entry)}`,
+  );
+  assert(
+    !options.htmlName || typeof htmlName === 'string',
+    `options.htmlName should be string, but got ${JSON.stringify(options.htmlName)}`,
+  );
+  assert(
+    !options.html || isPlainObject(options.html),
+    `options.html should be Object, but got ${JSON.stringify(options.html)}`,
+  );
 
   log.warn(`
 [umi-plugin-mpa] 使用 mpa 插件，意味着我们只使用 umi 作为构建工具。所以：
@@ -27,19 +40,6 @@ module.exports = function (api, options = {}) {
   });
 
   api.modifyWebpackConfig(webpackConfig => {
-    if (options.entry) {
-      assert(
-        isPlainObject(options.entry),
-        `options.entry should be object, but got ${JSON.stringify(options.entry)}`,
-      );
-    }
-    if (options.htmlName) {
-      assert(
-        typeof htmlName === 'string',
-        `opts.htmlName should be string, but got ${JSON.stringify(options.htmlName)}`,
-      );
-    }
-
     // set entry
     const hmrScript = webpackConfig.entry['umi'][0];
     webpackConfig.entry = options.entry;
@@ -57,9 +57,10 @@ module.exports = function (api, options = {}) {
         }, {});
     }
 
-    // modify entry
     Object.keys(webpackConfig.entry).forEach(key => {
       const entry = webpackConfig.entry[key];
+
+      // modify entry
       webpackConfig.entry[key] = [
         // polyfill
         ...(process.env.BABEL_POLYFILL === 'none' ? [] : [`${__dirname}/templates/polyfill.js`]),
@@ -72,6 +73,35 @@ module.exports = function (api, options = {}) {
         // original entry
         ...(Array.isArray(entry) ? entry : [entry]),
       ];
+
+      // html-webpack-plugin
+      if (options.html) {
+        const HTMLWebpackPlugin = require('html-webpack-plugin');
+        const template = require.resolve('./templates/document.ejs');
+        const config = {
+          template,
+          filename: `${key}.html`,
+          chunks: [key],
+          ...options.html,
+        };
+        // 约定 entry 同名的 .ejs 文件为模板文档
+        // 优先级最高
+        const entryFile = Array.isArray(entry) ? entry[0] : entry;
+        const templateFile = dirname(entryFile) + '/' + basename(entryFile, extname(entryFile)) + '.ejs';
+        if (existsSync(templateFile)) {
+          config.template = templateFile;
+        }
+        if (config.chunks) {
+          config.chunks.forEach((chunk, i) => {
+            if (chunk === '<%= page %>') {
+              config.chunks[i] = key;
+            }
+          })
+        }
+        webpackConfig.plugins.push(
+          new HTMLWebpackPlugin(config),
+        );
+      }
     });
 
     return webpackConfig;
@@ -96,8 +126,8 @@ module.exports = function (api, options = {}) {
       );
       webpackConfig.optimization
         .splitChunks(
-          isPlainObject(opts.splitChunks)
-            ? opts.splitChunks
+          isPlainObject(options.splitChunks)
+            ? options.splitChunks
             : {
               chunks: 'all',
               name: 'vendors',
@@ -111,6 +141,7 @@ module.exports = function (api, options = {}) {
     opts.urlLoaderExcludes = [
       ...(opts.urlLoaderExcludes || []),
       /\.html?$/,
+      /\.ejs?$/,
     ];
     return opts;
   });
