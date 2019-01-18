@@ -7,7 +7,7 @@ const inquirer = require('inquirer');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const semver = require('semver');
 
-module.exports = function (api, options = {}) {
+module.exports = function(api, options = {}) {
   const { log, paths } = api;
 
   const umiVersion = process.env.UMI_VERSION;
@@ -21,19 +21,29 @@ module.exports = function (api, options = {}) {
   );
   assert(
     !options.htmlName || typeof htmlName === 'string',
-    `options.htmlName should be string, but got ${JSON.stringify(options.htmlName)}`,
+    `options.htmlName should be string, but got ${JSON.stringify(
+      options.htmlName,
+    )}`,
   );
   assert(
-    !options.splitChunks || typeof options.splitChunks === 'boolean' || isPlainObject(options.splitChunks),
-    `options.splitChunks should be Boolean or Object, but got ${JSON.stringify(options.splitChunks)}`,
+    !options.splitChunks ||
+      typeof options.splitChunks === 'boolean' ||
+      isPlainObject(options.splitChunks),
+    `options.splitChunks should be Boolean or Object, but got ${JSON.stringify(
+      options.splitChunks,
+    )}`,
   );
   assert(
     !options.html || isPlainObject(options.html),
     `options.html should be Object, but got ${JSON.stringify(options.html)}`,
   );
   assert(
-    !options.selectEntry || typeof options.selectEntry === 'boolean' || isPlainObject(options.selectEntry),
-    `options.selectEntry should be Boolean or Object, but got ${JSON.stringify(options.selectEntry)}`,
+    !options.selectEntry ||
+      typeof options.selectEntry === 'boolean' ||
+      isPlainObject(options.selectEntry),
+    `options.selectEntry should be Boolean or Object, but got ${JSON.stringify(
+      options.selectEntry,
+    )}`,
   );
   if (options.html && options.html.template) {
     assert(
@@ -42,7 +52,8 @@ module.exports = function (api, options = {}) {
     );
   }
 
-  log.warn(`
+  log.warn(
+    `
 [umi-plugin-mpa] 使用 mpa 插件，意味着我们只使用 umi 作为构建工具。所以：
 
     1. 路由相关功能不工作
@@ -50,7 +61,8 @@ module.exports = function (api, options = {}) {
     3. app.js 无效
     4. 不支持 runtimePublicPath
     5. ...
-  `.trim());
+  `.trim(),
+  );
   console.log();
 
   // don't generate html files
@@ -71,14 +83,14 @@ module.exports = function (api, options = {}) {
     webpackConfig.entry = options.entry;
     if (!webpackConfig.entry) {
       // find entry from pages directory
-      log.info(`[umi-plugin-mpa] options.entry is null, find files in pages for entry`);
+      log.info(
+        `[umi-plugin-mpa] options.entry is null, find files in pages for entry`,
+      );
       webpackConfig.entry = readdirSync(paths.absPagesPath)
         .filter(f => f.charAt(0) !== '.' && /\.(j|t)sx?$/.test(extname(f)))
         .reduce((memo, f) => {
           const name = basename(f, extname(f));
-          memo[name] = [
-            join(paths.absPagesPath, f),
-          ];
+          memo[name] = [join(paths.absPagesPath, f)];
           return memo;
         }, {});
     }
@@ -87,21 +99,25 @@ module.exports = function (api, options = {}) {
     if (isDev && options.selectEntry) {
       const keys = Object.keys(webpackConfig.entry);
       if (keys.length > 1) {
-        const selectedKeys = deasyncPromise(inquirer.prompt([
-          {
-            type: 'checkbox',
-            message: 'Please select your entry pages',
-            name: 'pages',
-            choices: keys.map(v => ({
-              name: v,
-            })),
-            validate: (v) => {
-              return v.length >= 1 || 'Please choose at least one';
+        const selectedKeys = deasyncPromise(
+          inquirer.prompt([
+            {
+              type: 'checkbox',
+              message: 'Please select your entry pages',
+              name: 'pages',
+              choices: keys.map(v => ({
+                name: v,
+              })),
+              validate: v => {
+                return v.length >= 1 || 'Please choose at least one';
+              },
+              pageSize: 18,
+              ...(isPlainObject(options.selectEntry)
+                ? options.selectEntry
+                : {}),
             },
-            pageSize: 18,
-            ...(isPlainObject(options.selectEntry) ? options.selectEntry : {}),
-          }
-        ]));
+          ]),
+        );
         keys.forEach(key => {
           if (!selectedKeys.pages.includes(key)) {
             delete webpackConfig.entry[key];
@@ -116,13 +132,13 @@ module.exports = function (api, options = {}) {
       // modify entry
       webpackConfig.entry[key] = [
         // polyfill
-        ...(process.env.BABEL_POLYFILL === 'none' ? [] : [`${__dirname}/templates/polyfill.js`]),
+        ...(process.env.BABEL_POLYFILL === 'none'
+          ? []
+          : [`${__dirname}/templates/polyfill.js`]),
         // hmr
-        ...(
-          isDev && hmrScript.includes('webpackHotDevClient.js')
-            ? [hmrScript]
-            : []
-        ),
+        ...(isDev && hmrScript.includes('webpackHotDevClient.js')
+          ? [hmrScript]
+          : []),
         // original entry
         ...(Array.isArray(entry) ? entry : [entry]),
       ];
@@ -139,7 +155,11 @@ module.exports = function (api, options = {}) {
         // 约定 entry 同名的 .ejs 文件为模板文档
         // 优先级最高
         const entryFile = Array.isArray(entry) ? entry[0] : entry;
-        const templateFile = dirname(entryFile) + '/' + basename(entryFile, extname(entryFile)) + '.ejs';
+        const templateFile =
+          dirname(entryFile) +
+          '/' +
+          basename(entryFile, extname(entryFile)) +
+          '.ejs';
         if (existsSync(templateFile)) {
           config.template = templateFile;
         }
@@ -149,11 +169,9 @@ module.exports = function (api, options = {}) {
             if (chunk === '<%= page %>') {
               config.chunks[i] = key;
             }
-          })
+          });
         }
-        webpackConfig.plugins.push(
-          new HTMLWebpackPlugin(config),
-        );
+        webpackConfig.plugins.push(new HTMLWebpackPlugin(config));
       }
     });
 
@@ -162,7 +180,9 @@ module.exports = function (api, options = {}) {
       if (Object.keys(webpackConfig.entry).includes('index')) {
         filename = '__index.html';
         const port = process.env.PORT || '8000';
-        log.warn(`Since we already have index.html, checkout http://localhost:${port}/${filename} for entry list.`);
+        log.warn(
+          `Since we already have index.html, checkout http://localhost:${port}/${filename} for entry list.`,
+        );
       }
       webpackConfig.plugins.push(
         new HTMLWebpackPlugin({
@@ -178,7 +198,8 @@ module.exports = function (api, options = {}) {
   });
 
   api.chainWebpackConfig(webpackConfig => {
-    webpackConfig.module.rule('html')
+    webpackConfig.module
+      .rule('html')
       .test(/\.html?$/)
       .use('file-loader')
       .loader('file-loader')
@@ -186,20 +207,18 @@ module.exports = function (api, options = {}) {
         name: options.htmlName || '[name].[ext]',
       });
 
-    webpackConfig.output
-      .chunkFilename(`[name].js`);
+    webpackConfig.output.chunkFilename(`[name].js`);
 
     if (options.splitChunks) {
-      webpackConfig.optimization
-        .splitChunks(
-          isPlainObject(options.splitChunks)
-            ? options.splitChunks
-            : {
+      webpackConfig.optimization.splitChunks(
+        isPlainObject(options.splitChunks)
+          ? options.splitChunks
+          : {
               chunks: 'all',
               name: 'vendors',
               minChunks: 2,
-            }
-        );
+            },
+      );
     }
   });
 
@@ -211,4 +230,4 @@ module.exports = function (api, options = {}) {
     ];
     return opts;
   });
-}
+};
