@@ -20,7 +20,7 @@
     "build": "rollup -c",
     "changelog": "git changelog CHANGELOG.md && git add ./ && git commit -m 'update CHANGELOG.md'",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "prepublishOnly": "npm run changelog && np --no-cleanup --yolo --no-publish",
+    "prepublishOnly": "npm run build && npm run changelog && np --no-cleanup --yolo --no-publish",
     "test": "umi-test"
   },
   "dependencies": {
