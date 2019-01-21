@@ -1,7 +1,7 @@
 
 export default {
   plugins: [
-    ['../../../index', {
+    ['../../../dist/index', {
       splitChunks: {
         chunks: 'all',
         name: 'vendors',

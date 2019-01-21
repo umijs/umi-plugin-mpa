@@ -1,13 +1,25 @@
-const { existsSync, readdirSync } = require('fs');
-const { join, extname, basename, dirname } = require('path');
-const assert = require('assert');
+import { IApi } from 'umi-plugin-types';
+import { existsSync, readdirSync } from 'fs';
+import { join, extname, basename, dirname } from 'path';
+
 const isPlainObject = require('is-plain-object');
+const assert = require('assert');
 const deasyncPromise = require('deasync-promise');
 const inquirer = require('inquirer');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const semver = require('semver');
 
-module.exports = function(api, options = {}) {
+interface IOption {
+  entry: object,
+  htmlName: string,
+  splitChunks: object | boolean,
+  html: {
+    template: string,
+  },
+  selectEntry: boolean | object,
+}
+
+module.exports = function(api: IApi, options = {} as IOption) {
   const { log, paths } = api;
 
   const umiVersion = process.env.UMI_VERSION;
@@ -20,7 +32,7 @@ module.exports = function(api, options = {}) {
     `options.entry should be object, but got ${JSON.stringify(options.entry)}`,
   );
   assert(
-    !options.htmlName || typeof htmlName === 'string',
+    !options.htmlName || typeof options.htmlName === 'string',
     `options.htmlName should be string, but got ${JSON.stringify(
       options.htmlName,
     )}`,
@@ -101,6 +113,7 @@ module.exports = function(api, options = {}) {
       if (keys.length > 1) {
         const selectedKeys = deasyncPromise(
           inquirer.prompt([
+            Object.assign(
             {
               type: 'checkbox',
               message: 'Please select your entry pages',
@@ -112,10 +125,9 @@ module.exports = function(api, options = {}) {
                 return v.length >= 1 || 'Please choose at least one';
               },
               pageSize: 18,
-              ...(isPlainObject(options.selectEntry)
+            }, isPlainObject(options.selectEntry)
                 ? options.selectEntry
                 : {}),
-            },
           ]),
         );
         keys.forEach(key => {
@@ -134,7 +146,7 @@ module.exports = function(api, options = {}) {
         // polyfill
         ...(process.env.BABEL_POLYFILL === 'none'
           ? []
-          : [`${__dirname}/templates/polyfill.js`]),
+          : [require.resolve(`../templates/polyfill.js`)]),
         // hmr
         ...(isDev && hmrScript.includes('webpackHotDevClient.js')
           ? [hmrScript]
@@ -145,7 +157,7 @@ module.exports = function(api, options = {}) {
 
       // html-webpack-plugin
       if (options.html) {
-        const template = require.resolve('./templates/document.ejs');
+        const template = require.resolve('../templates/document.ejs');
         const config = {
           template,
           filename: `${key}.html`,
@@ -186,7 +198,7 @@ module.exports = function(api, options = {}) {
       }
       webpackConfig.plugins.push(
         new HTMLWebpackPlugin({
-          template: require.resolve('./templates/entryList.ejs'),
+          template: require.resolve('../templates/entryList.ejs'),
           entries: Object.keys(webpackConfig.entry),
           filename,
           inject: false,

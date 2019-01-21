@@ -5,3 +5,5 @@
 /examples/**/.umi-production
 /test/**/dist
 /test/**/.umi
+/.rpt2_cache
+/dist

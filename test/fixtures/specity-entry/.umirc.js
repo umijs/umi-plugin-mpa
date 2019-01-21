@@ -1,7 +1,7 @@
 
 export default {
   plugins: [
-    ['../../../index', {
+    ['../../../dist/index', {
       entry: {
         index: require.resolve('./index'),
       },
