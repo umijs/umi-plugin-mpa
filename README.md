@@ -16,17 +16,17 @@ MPA(multiple-page application) plugin for umi.
 
 ## Features
 
-* ✔︎ 禁用 umi 内置的 HTML 生成
-* ✔︎ 禁用 umi 内置的路由功能
-* ✔︎ 禁用 umi 默认生成的 entry 配置
-* ✔︎ 支持通过 targets 配置的补丁方案，配 `BABEL_POLYFILL=none` 则不打补丁
-* ✔︎ 支持自动查找 `src/pages` 下的 js 文件为 entry
-* ✔︎ import 的 html 文件会被生成到 dist 目录下
-* ✔︎ Hot Module Replacement
-* ✔︎ 通过 `splitChunks` 配置提取公共部分
-* ✔︎ 通过 `html` 配置根据入口文件自动生成 html
-* ✔︎ 通过 `selectEntry` 配置选择部分 entry 以提升调试效率
-* ✔︎ 支持查看 entry 列表，默认是 `index.html`，冲突时切换为 `__index.html`
+- ✔︎ 禁用 umi 内置的 HTML 生成
+- ✔︎ 禁用 umi 内置的路由功能
+- ✔︎ 禁用 umi 默认生成的 entry 配置
+- ✔︎ 支持通过 targets 配置的补丁方案，配 `BABEL_POLYFILL=none` 则不打补丁
+- ✔︎ 支持自动查找 `src/pages` 下的 js 文件为 entry
+- ✔︎ import 的 html 文件会被生成到 dist 目录下
+- ✔︎ Hot Module Replacement
+- ✔︎ 通过 `splitChunks` 配置提取公共部分
+- ✔︎ 通过 `html` 配置根据入口文件自动生成 html
+- ✔︎ 通过 `selectEntry` 配置选择部分 entry 以提升调试效率
+- ✔︎ 支持查看 entry 列表，默认是 `index.html`，冲突时切换为 `__index.html`
 
 ## Installation
 
@@ -48,9 +48,7 @@ with options,
 
 ```js
 export default {
-  plugins: [
-    ['umi-plugin-mpa', options],
-  ],
+  plugins: [['umi-plugin-mpa', options]],
 };
 ```
 
@@ -60,17 +58,17 @@ export default {
 
 指定 webpack 的 entry 。
 
-* Type: `Object`
-* Default: `null`
+- Type: `Object`
+- Default: `null`
 
-如果没有设置 entry，会自动查找 `src/pages` 下的 js 或 ts 文件为 entry 。 
+如果没有设置 entry，会自动查找 `src/pages` 下的 js 或 ts 文件为 entry 。
 
 ### htmlName
 
 指定 import 生成的 html 文件的文件名。
 
-* Type: `String`
-* Default: `[name].[ext]`
+- Type: `String`
+- Default: `[name].[ext]`
 
 可以用 `[name]`、`[path]`、`[hash]` 和 `[ext]`，详见 https://github.com/webpack-contrib/file-loader 。
 
@@ -78,17 +76,35 @@ export default {
 
 配置 webpack 的 splitChunks，用于提取 common 或 vendors 等。
 
-* Type: `Boolean | Object`
-* Default: false
+- Type: `Boolean | Object`
+- Default: false
 
-如果值为 `true`，等于配置了 `{ chunks: 'async', name: 'vendors' }`，并且 html 的 chunks 会配置为 `["vendors", "<%= page %>"]`，详见 https://webpack.js.org/plugins/split-chunks-plugin/ 。
+如果值为 `true`，等于配置了 `{ chunks: 'all', name: 'vendors', minChunks: 2 }`，并且 html 的 chunks 会配置为 `["vendors", "<%= page %>"]`，详见 https://webpack.js.org/plugins/split-chunks-plugin/ 。
+
+比如只要包含 node_modules 下的公共部分，可以这样配：
+
+```js
+splitChunks: {
+  cacheGroups: {
+    vendors: {
+      chunks: 'all',
+      minChunks: 2,
+      name: 'vendors',
+      test: /[\\/]node_modules[\\/]/,
+    },
+  },
+},
+html: {
+  chunks: ['vendors', '<%= page %>'],
+},
+```
 
 ### html
 
 配置给 [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin) 的配置，用于为每个 entry 自动生成 html 文件。
 
-* Type: `Object`
-* Default: `null`
+- Type: `Object`
+- Default: `null`
 
 如有配置，则会基于以下默认值进行覆盖，
 
@@ -102,9 +118,9 @@ export default {
 
 其中，
 
-* template 有一个[默认模板](http://github.com/umijs/umi-plugin-mpa/tree/master/templates/document.ejs)，可通过配置进行覆盖
-* 如果有一个和 entry 文件同目录同文件名但后缀为 `.ejs` 的文件，则会用次文件作为其 template，且优先级最高
-* chunks 有一个特殊项为 `<%= page %>`，如果配置了，会被替换为当前 page 名
+- template 有一个[默认模板](http://github.com/umijs/umi-plugin-mpa/tree/master/templates/document.ejs)，可通过配置进行覆盖
+- 如果有一个和 entry 文件同目录同文件名但后缀为 `.ejs` 的文件，则会用次文件作为其 template，且优先级最高
+- chunks 有一个特殊项为 `<%= page %>`，如果配置了，会被替换为当前 page 名
 
 更多配置方式，详见 https://github.com/jantimon/html-webpack-plugin#options 。
 
@@ -112,8 +128,8 @@ export default {
 
 是否开启 entry 选择，以提升开发效率。
 
-* Type: `Boolean | Object`
-* Default: `false`
+- Type: `Boolean | Object`
+- Default: `false`
 
 注：
 
