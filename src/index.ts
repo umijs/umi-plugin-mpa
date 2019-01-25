@@ -4,6 +4,7 @@ import { join, extname, basename, dirname } from 'path';
 
 const isPlainObject = require('is-plain-object');
 const assert = require('assert');
+const { cloneDeep } = require('lodash');
 const deasyncPromise = require('deasync-promise');
 const inquirer = require('inquirer');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
@@ -162,7 +163,7 @@ module.exports = function(api: IApi, options = {} as IOption) {
           template,
           filename: `${key}.html`,
           chunks: options.splitChunks === true ? ['vendors', key] : [key],
-          ...options.html,
+          ...cloneDeep(options.html),
         };
         // 约定 entry 同名的 .ejs 文件为模板文档
         // 优先级最高
@@ -177,11 +178,11 @@ module.exports = function(api: IApi, options = {} as IOption) {
         }
         // 支持在 chunks 里用 <%= page %> 占位
         if (config.chunks) {
-          config.chunks.forEach((chunk, i) => {
+          for (const [i, chunk] of config.chunks.entries()) {
             if (chunk === '<%= page %>') {
               config.chunks[i] = key;
             }
-          });
+          }
         }
         webpackConfig.plugins.push(new HTMLWebpackPlugin(config));
       }
