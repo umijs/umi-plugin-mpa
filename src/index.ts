@@ -207,6 +207,12 @@ module.exports = function(api: IApi, options = {} as IOption) {
       );
     }
 
+    // remove all the default aliases which umi-plugin-dev set
+    // @see https://github.com/umijs/umi/blob/f74a7dcc3e6ee7cc4e685a0d47db8d37849cb0e0/packages/umi-build-dev/src/plugins/afwebpack-config.js#L67
+    ['react', 'react-dom', 'react-router', 'react-router-dom', 'react-router-config', 'history'].forEach(lib => {
+      delete webpackConfig.resolve.alias[lib];
+    });
+
     return webpackConfig;
   });
 

@@ -40,6 +40,8 @@
     "lint-staged": "^8.1.0",
     "np": "4",
     "prettier": "^1.15.3",
+    "react": "15.*",
+    "react-dom": "15.*",
     "rollup": "^1.1.1",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-filesize": "^6.0.0",
