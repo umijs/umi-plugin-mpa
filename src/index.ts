@@ -20,6 +20,10 @@ interface IOption {
   selectEntry: boolean | object,
 }
 
+interface IEntry {
+  [name: string]: string | string[];
+}
+
 module.exports = function(api: IApi, options = {} as IOption) {
   const { log, paths } = api;
 
@@ -93,7 +97,7 @@ module.exports = function(api: IApi, options = {} as IOption) {
   api.modifyWebpackConfig(webpackConfig => {
     // set entry
     const hmrScript = webpackConfig.entry['umi'][0];
-    webpackConfig.entry = options.entry;
+    webpackConfig.entry = options.entry as IEntry;
     if (!webpackConfig.entry) {
       // find entry from pages directory
       log.info(
