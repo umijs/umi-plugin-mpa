@@ -5,21 +5,9 @@
   <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-  <% if (htmlWebpackPlugin.options.spmA) {%> 
-    <meta name="data-aspm" content="<%= htmlWebpackPlugin.options.spmA %>">
-  <%}%>
-
-  <% if (htmlWebpackPlugin.options.bizType) {%> 
-    <meta name="data-bizType" content="<%= htmlWebpackPlugin.options.bizType %>">
-  <%}%>
-  
-  <title>
-    <%= htmlWebpackPlugin.options.title %>
-  </title>
+  <title>Document</title>
 </head>
-
-<body <% if (htmlWebpackPlugin.options.spmB) {%> data-aspm="<%= htmlWebpackPlugin.options.spmB %>" <%}%>>
+<body>
 
   <div id="root"></div>
 
