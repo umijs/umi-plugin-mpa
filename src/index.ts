@@ -3,6 +3,7 @@ import { existsSync, readdirSync } from 'fs';
 import { join, extname, basename, dirname } from 'path';
 
 const isPlainObject = require('is-plain-object');
+const isString = require('is-string');
 const assert = require('assert');
 const { cloneDeep } = require('lodash');
 const deasyncPromise = require('deasync-promise');
@@ -21,7 +22,7 @@ interface IOption {
 }
 
 interface IEntry {
-  [name: string]: string | string[];
+  [name: string]: string | (string | object)[];
 }
 
 module.exports = function(api: IApi, options = {} as IOption) {
@@ -97,7 +98,13 @@ module.exports = function(api: IApi, options = {} as IOption) {
   api.modifyWebpackConfig(webpackConfig => {
     // set entry
     const hmrScript = webpackConfig.entry['umi'][0];
-    webpackConfig.entry = options.entry as IEntry;
+
+    // filter 
+    webpackConfig.entry = Object.keys(options.entry).reduce((memo, next) => {
+      memo[next] = Array.isArray(options.entry[next]) ? options.entry[next].filter(isString) : options.entry[next];
+      return memo;
+    }, {});
+
     if (!webpackConfig.entry) {
       // find entry from pages directory
       log.info(
@@ -162,12 +169,14 @@ module.exports = function(api: IApi, options = {} as IOption) {
 
       // html-webpack-plugin
       if (options.html) {
+        const entryConfig = (Array.isArray(options.entry[key]) && options.entry[key].filter(isPlainObject)[0]) || { context: {} };
         const template = require.resolve('../templates/document.ejs');
         const config = {
           template,
           filename: `${key}.html`,
           chunks: options.splitChunks === true ? ['vendors', key] : [key],
           ...cloneDeep(options.html),
+          ...entryConfig.context || {},
         };
         // 约定 entry 同名的 .ejs 文件为模板文档
         // 优先级最高
