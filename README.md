@@ -89,7 +89,7 @@ entry 的额外配置项目前支持：
 
 然后在 html 模板里可以通过 `htmlWebpackPlugin.options` 使用通过 `context` 指定的配置项，
 
-```
+```html
 <title><%= htmlWebpackPlugin.options.title %></title>
 ```
 
