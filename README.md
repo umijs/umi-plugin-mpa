@@ -56,12 +56,42 @@ export default {
 
 ### entry
 
-指定 webpack 的 entry 。
+指定 webpack 的 [entry](https://webpack.js.org/configuration/entry-context/#entry) 。
 
 - Type: `Object`
 - Default: `null`
 
 如果没有设置 entry，会自动查找 `src/pages` 下的 js 或 ts 文件为 entry 。
+
+entry 项的值如果是数组且最后一个是对象时，会作为此 entry 的额外配置项。
+
+entry 的额外配置项目前支持：
+
+#### context
+
+如果有配 `html` 时会作为 html 的模板内容。
+
+比如：
+
+```js
+{
+  entry: {
+    foo: [
+      './src/foo.js',
+      {
+        context: { title: '首页' }
+      },
+    ],
+  },
+  html: {},
+}
+```
+
+然后在 html 模板里可以通过 `htmlWebpackPlugin.options` 使用通过 `context` 指定的配置项，
+
+```
+<title><%= htmlWebpackPlugin.options.title %></title>
+```
 
 ### htmlName
 
@@ -84,19 +114,21 @@ export default {
 比如只要包含 node_modules 下的公共部分，可以这样配：
 
 ```js
-splitChunks: {
-  cacheGroups: {
-    vendors: {
-      chunks: 'all',
-      minChunks: 2,
-      name: 'vendors',
-      test: /[\\/]node_modules[\\/]/,
+{
+  splitChunks: {
+    cacheGroups: {
+      vendors: {
+        chunks: 'all',
+        minChunks: 2,
+        name: 'vendors',
+        test: /[\\/]node_modules[\\/]/,
+      },
     },
   },
-},
-html: {
-  chunks: ['vendors', '<%= page %>'],
-},
+  html: {
+    chunks: ['vendors', '<%= page %>'],
+  },
+}
 ```
 
 ### html
