@@ -11,13 +11,13 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 const semver = require('semver');
 
 interface IOption {
-  entry: object,
-  htmlName: string,
-  splitChunks: object | boolean,
-  html: {
-    template: string,
+  entry?: object,
+  htmlName?: string,
+  splitChunks?: object | boolean,
+  html?: {
+    template?: string,
   },
-  selectEntry: boolean | object,
+  selectEntry?: boolean | object,
 }
 
 interface IEntry {
@@ -25,7 +25,7 @@ interface IEntry {
 }
 
 interface IEntryConfig {
-  context: object,
+  context?: object,
 }
 
 module.exports = function(api: IApi, options = {} as IOption) {
