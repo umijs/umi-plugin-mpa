@@ -11,17 +11,21 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 const semver = require('semver');
 
 interface IOption {
-  entry: object,
-  htmlName: string,
-  splitChunks: object | boolean,
-  html: {
-    template: string,
+  entry?: object,
+  htmlName?: string,
+  splitChunks?: object | boolean,
+  html?: {
+    template?: string,
   },
-  selectEntry: boolean | object,
+  selectEntry?: boolean | object,
 }
 
 interface IEntry {
   [name: string]: string | string[];
+}
+
+interface IEntryConfig {
+  context?: object,
 }
 
 module.exports = function(api: IApi, options = {} as IOption) {
@@ -97,8 +101,8 @@ module.exports = function(api: IApi, options = {} as IOption) {
   api.modifyWebpackConfig(webpackConfig => {
     // set entry
     const hmrScript = webpackConfig.entry['umi'][0];
-    webpackConfig.entry = options.entry as IEntry;
-    if (!webpackConfig.entry) {
+
+    if (!options.entry) {
       // find entry from pages directory
       log.info(
         `[umi-plugin-mpa] options.entry is null, find files in pages for entry`,
@@ -110,6 +114,8 @@ module.exports = function(api: IApi, options = {} as IOption) {
           memo[name] = [join(paths.absPagesPath, f)];
           return memo;
         }, {});
+    } else {
+      webpackConfig.entry = options.entry as IEntry;
     }
 
     // 支持选择部分 entry 以提升开发效率
@@ -145,6 +151,10 @@ module.exports = function(api: IApi, options = {} as IOption) {
 
     Object.keys(webpackConfig.entry).forEach(key => {
       const entry = webpackConfig.entry[key];
+      let entryConfig = {} as IEntryConfig;
+      if (Array.isArray(entry) && isPlainObject(entry[entry.length - 1])) {
+        entryConfig = entry.splice(entry.length - 1, 1)[0];
+      }
 
       // modify entry
       webpackConfig.entry[key] = [
@@ -168,6 +178,7 @@ module.exports = function(api: IApi, options = {} as IOption) {
           filename: `${key}.html`,
           chunks: options.splitChunks === true ? ['vendors', key] : [key],
           ...cloneDeep(options.html),
+          ...entryConfig.context,
         };
         // 约定 entry 同名的 .ejs 文件为模板文档
         // 优先级最高
