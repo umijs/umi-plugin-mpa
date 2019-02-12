@@ -3,7 +3,6 @@ import { existsSync, readdirSync } from 'fs';
 import { join, extname, basename, dirname } from 'path';
 
 const isPlainObject = require('is-plain-object');
-const isString = require('is-string');
 const assert = require('assert');
 const { cloneDeep } = require('lodash');
 const deasyncPromise = require('deasync-promise');
@@ -22,7 +21,11 @@ interface IOption {
 }
 
 interface IEntry {
-  [name: string]: string | (string | object)[];
+  [name: string]: string | string[];
+}
+
+interface IEntryConfig {
+  context: object,
 }
 
 module.exports = function(api: IApi, options = {} as IOption) {
@@ -112,11 +115,7 @@ module.exports = function(api: IApi, options = {} as IOption) {
           return memo;
         }, {});
     } else {
-      // filter 
-      webpackConfig.entry = Object.keys(options.entry).reduce((memo, next) => {
-        memo[next] = Array.isArray(options.entry[next]) ? options.entry[next].filter(isString) : options.entry[next];
-        return memo;
-      }, {});
+      webpackConfig.entry = options.entry as IEntry;
     }
 
     // 支持选择部分 entry 以提升开发效率
@@ -152,6 +151,10 @@ module.exports = function(api: IApi, options = {} as IOption) {
 
     Object.keys(webpackConfig.entry).forEach(key => {
       const entry = webpackConfig.entry[key];
+      let entryConfig = {} as IEntryConfig;
+      if (Array.isArray(entry) && isPlainObject(entry[entry.length - 1])) {
+        entryConfig = entry.splice(entry.length - 1, 1)[0];
+      }
 
       // modify entry
       webpackConfig.entry[key] = [
@@ -169,7 +172,6 @@ module.exports = function(api: IApi, options = {} as IOption) {
 
       // html-webpack-plugin
       if (options.html) {
-        const entryConfig = (options.entry && Array.isArray(options.entry[key]) && options.entry[key].filter(isPlainObject)[0]) || { context: {} };
         const template = require.resolve('../templates/document.ejs');
         const config = {
           template,
