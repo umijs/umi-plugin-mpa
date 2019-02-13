@@ -18,7 +18,6 @@ export default {
     },
     html: {
       type: 'object',
-      additionalProperties: false,
       properties: {
         template: {
           type: 'string',

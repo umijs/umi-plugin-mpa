@@ -1,16 +1,15 @@
 import { IApi } from 'umi-plugin-types';
 import { existsSync, readdirSync } from 'fs';
 import { join, extname, basename, dirname } from 'path';
+import { cloneDeep, isPlainObject } from 'lodash';
+import AJV from 'ajv';
 import schema from './schema';
 
-const isPlainObject = require('is-plain-object');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
 const assert = require('assert');
-const { cloneDeep } = require('lodash');
 const deasyncPromise = require('deasync-promise');
 const inquirer = require('inquirer');
-const HTMLWebpackPlugin = require('html-webpack-plugin');
 const semver = require('semver');
-const AJV = require('ajv');
 
 interface IOption {
   entry?: object,
