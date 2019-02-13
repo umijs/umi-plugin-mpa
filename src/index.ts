@@ -1,6 +1,7 @@
 import { IApi } from 'umi-plugin-types';
 import { existsSync, readdirSync } from 'fs';
 import { join, extname, basename, dirname } from 'path';
+import schema from './schema';
 
 const isPlainObject = require('is-plain-object');
 const assert = require('assert');
@@ -9,6 +10,7 @@ const deasyncPromise = require('deasync-promise');
 const inquirer = require('inquirer');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const semver = require('semver');
+const AJV = require('ajv');
 
 interface IOption {
   entry?: object,
@@ -28,7 +30,7 @@ interface IEntryConfig {
   context?: object,
 }
 
-module.exports = function(api: IApi, options = {} as IOption) {
+export default function(api: IApi, options = {} as IOption) {
   const { log, paths } = api;
 
   const umiVersion = process.env.UMI_VERSION;
@@ -36,41 +38,19 @@ module.exports = function(api: IApi, options = {} as IOption) {
     semver.gte(umiVersion, '2.4.3') && semver.lt(umiVersion, '3.0.0'),
     `Your umi version is ${umiVersion}, >=2.4.3 and <3 is required.`,
   );
-  assert(
-    !options.entry || isPlainObject(options.entry),
-    `options.entry should be object, but got ${JSON.stringify(options.entry)}`,
-  );
-  assert(
-    !options.htmlName || typeof options.htmlName === 'string',
-    `options.htmlName should be string, but got ${JSON.stringify(
-      options.htmlName,
-    )}`,
-  );
-  assert(
-    !options.splitChunks ||
-      typeof options.splitChunks === 'boolean' ||
-      isPlainObject(options.splitChunks),
-    `options.splitChunks should be Boolean or Object, but got ${JSON.stringify(
-      options.splitChunks,
-    )}`,
-  );
-  assert(
-    !options.html || isPlainObject(options.html),
-    `options.html should be Object, but got ${JSON.stringify(options.html)}`,
-  );
-  assert(
-    !options.selectEntry ||
-      typeof options.selectEntry === 'boolean' ||
-      isPlainObject(options.selectEntry),
-    `options.selectEntry should be Boolean or Object, but got ${JSON.stringify(
-      options.selectEntry,
-    )}`,
-  );
-  if (options.html && options.html.template) {
-    assert(
-      extname(options.html.template) === '.ejs',
-      `options.html.template should use ejs file, but got options.html.template`,
-    );
+
+  // validate options with ajv
+  const ajv = new AJV({ allErrors: true });
+  const isValid = ajv.validate(schema, options);
+  if (!isValid) {
+    const errors = ajv.errors.map(({ dataPath, message }, index) => {
+      return `${index + 1}. ${dataPath}${dataPath ? ' ' : ''}${message}`;
+    });
+    throw new Error(`
+Invalid options applied to umi-plugin-mpa
+
+${errors.join('\n')}
+`.trim());
   }
 
   log.warn(
