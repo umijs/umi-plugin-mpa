@@ -10,6 +10,9 @@ export default {
       type: 'string',
       minLength: 1,
     },
+    deepPageEntry: {
+      type: 'boolean',
+    },
     splitChunks: {
       anyOf: [
         { type: 'boolean' },
