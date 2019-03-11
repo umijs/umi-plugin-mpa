@@ -16,6 +16,12 @@ describe('schema', () => {
     })).toEqual(true);
   });
 
+  it('deepPageEntry', () => {
+    expect(ajv.validate(schema, {
+      deepPageEntry: true,
+    })).toEqual(true);
+  });
+
   it('splitChunks', () => {
     // boolean
     expect(ajv.validate(schema, {

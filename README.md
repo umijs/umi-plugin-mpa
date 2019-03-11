@@ -20,7 +20,7 @@ MPA(multiple-page application) plugin for umi.
 - ✔︎ 禁用 umi 内置的路由功能
 - ✔︎ 禁用 umi 默认生成的 entry 配置
 - ✔︎ 支持通过 targets 配置的补丁方案，配 `BABEL_POLYFILL=none` 则不打补丁
-- ✔︎ 支持自动查找 `src/pages` 下的 js 文件为 entry
+- ✔︎ 支持多级目录自动查找 `src/pages` 下的 js 文件为 entry
 - ✔︎ import 的 html 文件会被生成到 dist 目录下
 - ✔︎ Hot Module Replacement
 - ✔︎ 通过 `splitChunks` 配置提取公共部分
@@ -101,6 +101,15 @@ entry 的额外配置项目前支持：
 - Default: `[name].[ext]`
 
 可以用 `[name]`、`[path]`、`[hash]` 和 `[ext]`，详见 https://github.com/webpack-contrib/file-loader 。
+
+### deepPageEntry
+
+在自动查找 `src/pages` 下的 js 或 ts 文件为 entry 时，是否进入子目录查找
+
+- Type: `Boolean`
+- Default: `false`
+
+注：会跳过以 `__` 或 `.` 开头的目录
 
 ### splitChunks
 

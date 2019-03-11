@@ -1,7 +1,7 @@
 import { IApi } from 'umi-plugin-types';
-import { existsSync, readdirSync } from 'fs';
+import { existsSync, readdirSync, lstatSync } from 'fs';
 import { join, extname, basename, dirname } from 'path';
-import { cloneDeep, isPlainObject } from 'lodash';
+import { cloneDeep, isPlainObject, flattenDeep } from 'lodash';
 import AJV from 'ajv';
 import schema from './schema';
 
@@ -14,6 +14,7 @@ const semver = require('semver');
 interface IOption {
   entry?: object,
   htmlName?: string,
+  deepPageEntry?: boolean,
   splitChunks?: object | boolean,
   html?: {
     template?: string,
@@ -27,6 +28,18 @@ interface IEntry {
 
 interface IEntryConfig {
   context?: object,
+}
+
+function getFiles(absPath: string, path: string, files: string[]) {
+  return files.map(f => {
+    const lstat = lstatSync(join(absPath, path, f));
+    if(f.charAt(0) !== '.' && !f.startsWith('__') && lstat.isDirectory()) {
+      const subDirFiles = readdirSync(join(absPath, path, f));
+      return getFiles(absPath, join(path, f), subDirFiles);
+    } else {
+      return join(path, f);
+    }
+  })
 }
 
 export default function(api: IApi, options = {} as IOption) {
@@ -86,10 +99,14 @@ ${errors.join('\n')}
       log.info(
         `[umi-plugin-mpa] options.entry is null, find files in pages for entry`,
       );
-      webpackConfig.entry = readdirSync(paths.absPagesPath)
-        .filter(f => f.charAt(0) !== '.' && /\.(j|t)sx?$/.test(extname(f)))
+      // 是否进入子目录生成路由
+      const allFiles = options.deepPageEntry 
+        ? flattenDeep(getFiles(paths.absPagesPath, '', readdirSync(paths.absPagesPath)))
+        : readdirSync(paths.absPagesPath);
+      webpackConfig.entry = (allFiles as string[])
+        .filter(f => basename(f).charAt(0) !== '.' && /\.(j|t)sx?$/.test(extname(f)))
         .reduce((memo, f) => {
-          const name = basename(f, extname(f));
+          const name = f.replace(/\.(j|t)sx?$/, '');
           memo[name] = [join(paths.absPagesPath, f)];
           return memo;
         }, {});
