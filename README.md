@@ -178,6 +178,10 @@ entry 的额外配置项目前支持：
 2. 适用于 entry 量大的项目，只在 dev 时开启
 3. 由于使用了 deasync-promise，所以在入口选择界面上按 Ctrl+C 退出会失败，且进程清理不干净。这时需手动强制退出相关 node 进程。
 
+## Questions & Suggestions
+
+Please open an issue [here](https://github.com/umijs/umi/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc).
+
 ## LICENSE
 
 MIT
