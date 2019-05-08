@@ -100,7 +100,7 @@ ${errors.join('\n')}
         `[umi-plugin-mpa] options.entry is null, find files in pages for entry`,
       );
       // 是否进入子目录生成路由
-      const allFiles = options.deepPageEntry 
+      const allFiles = options.deepPageEntry
         ? flattenDeep(getFiles(paths.absPagesPath, '', readdirSync(paths.absPagesPath)))
         : readdirSync(paths.absPagesPath);
       webpackConfig.entry = (allFiles as string[])
@@ -237,7 +237,10 @@ ${errors.join('\n')}
         name: options.htmlName || '[name].[ext]',
       });
 
-    webpackConfig.output.chunkFilename(`[name].js`);
+    const { config } = api;
+    if(!config.hash) {
+      webpackConfig.output.chunkFilename(`[name].js`);
+    }
 
     if (options.splitChunks) {
       webpackConfig.optimization.splitChunks(
