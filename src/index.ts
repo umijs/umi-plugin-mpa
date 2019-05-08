@@ -237,8 +237,6 @@ ${errors.join('\n')}
         name: options.htmlName || '[name].[ext]',
       });
 
-    webpackConfig.output.chunkFilename(`[name].js`);
-
     if (options.splitChunks) {
       webpackConfig.optimization.splitChunks(
         isPlainObject(options.splitChunks)
