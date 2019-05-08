@@ -240,7 +240,7 @@ ${errors.join('\n')}
       });
 
     const { config } = api;
-    if(!config.hash) {
+    if (!config.hash) {
       webpackConfig.output.chunkFilename(`[name].js`);
     }
 
