@@ -65,18 +65,20 @@ ${errors.join('\n')}
 `.trim());
   }
 
-  log.warn(
-    `
-[umi-plugin-mpa] 使用 mpa 插件，意味着我们只使用 umi 作为构建工具。所以：
+  if (!process.env.DISABLE_WARN) {
+    log.warn(
+      `
+  [umi-plugin-mpa] 使用 mpa 插件，意味着我们只使用 umi 作为构建工具。所以：
 
-    1. 路由相关功能不工作
-    2. global.css、global.js 无效
-    3. app.js 无效
-    4. 不支持 runtimePublicPath
-    5. ...
-  `.trim(),
-  );
-  console.log();
+      1. 路由相关功能不工作
+      2. global.css、global.js 无效
+      3. app.js 无效
+      4. 不支持 runtimePublicPath
+      5. ...
+    `.trim(),
+    );
+    console.log();
+  }
 
   // don't generate html files
   process.env.HTML = 'none';
@@ -100,7 +102,7 @@ ${errors.join('\n')}
         `[umi-plugin-mpa] options.entry is null, find files in pages for entry`,
       );
       // 是否进入子目录生成路由
-      const allFiles = options.deepPageEntry 
+      const allFiles = options.deepPageEntry
         ? flattenDeep(getFiles(paths.absPagesPath, '', readdirSync(paths.absPagesPath)))
         : readdirSync(paths.absPagesPath);
       webpackConfig.entry = (allFiles as string[])
