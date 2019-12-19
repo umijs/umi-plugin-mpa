@@ -19,7 +19,7 @@ interface IOption {
   html?: {
     template?: string,
   },
-  selectEntry?: boolean | object,
+  // selectEntry?: boolean | object,
 }
 
 interface IEntry {
@@ -118,32 +118,33 @@ ${errors.join('\n')}
 
     // 支持选择部分 entry 以提升开发效率
     if (isDev && options.selectEntry) {
-      const keys = Object.keys(webpackConfig.entry);
-      if (keys.length > 1) {
-        const selectedKeys = inquirer.prompt([
-          Object.assign(
-          {
-            type: 'checkbox',
-            message: 'Please select your entry pages',
-            name: 'pages',
-            choices: keys.map(v => ({
-              name: v,
-            })),
-            validate: v => {
-              return v.length >= 1 || 'Please choose at least one';
-            },
-            pageSize: 18,
-          }, isPlainObject(options.selectEntry)
-              ? options.selectEntry
-              : {}),
-        ]);
-        console.log('selectedKeys', selectedKeys);
-        keys.forEach(key => {
-          if (!selectedKeys.pages.includes(key)) {
-            delete webpackConfig.entry[key];
-          }
-        });
-      }
+      log.warn('selectEntry deprecated');
+      // const keys = Object.keys(webpackConfig.entry);
+      // if (keys.length > 1) {
+      //   const selectedKeys = await inquirer.prompt([
+      //     Object.assign(
+      //     {
+      //       type: 'checkbox',
+      //       message: 'Please select your entry pages',
+      //       name: 'pages',
+      //       choices: keys.map(v => ({
+      //         name: v,
+      //       })),
+      //       validate: v => {
+      //         return v.length >= 1 || 'Please choose at least one';
+      //       },
+      //       pageSize: 18,
+      //     }, isPlainObject(options.selectEntry)
+      //         ? options.selectEntry
+      //         : {}),
+      //   ])
+      //   console.log('selectedKeys', selectedKeys);
+      //   keys.forEach(key => {
+      //     if (!selectedKeys.pages.includes(key)) {
+      //       delete webpackConfig.entry[key];
+      //     }
+      //   });
+      // }
     }
 
     Object.keys(webpackConfig.entry).forEach(key => {
