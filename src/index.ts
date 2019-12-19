@@ -7,8 +7,6 @@ import schema from './schema';
 
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const assert = require('assert');
-const async = require('async');
-const inquirer = require('inquirer');
 const semver = require('semver');
 
 interface IOption {
