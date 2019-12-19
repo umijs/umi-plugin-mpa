@@ -1,4 +1,4 @@
-import { IApi } from 'umi-plugin-types';
+import { IApi } from 'umi-types';
 import { existsSync, readdirSync, lstatSync } from 'fs';
 import { join, extname, basename, dirname } from 'path';
 import { cloneDeep, isPlainObject, flattenDeep } from 'lodash';
@@ -7,7 +7,7 @@ import schema from './schema';
 
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const assert = require('assert');
-const deasyncPromise = require('deasync-promise');
+const async = require('async');
 const inquirer = require('inquirer');
 const semver = require('semver');
 
@@ -120,25 +120,24 @@ ${errors.join('\n')}
     if (isDev && options.selectEntry) {
       const keys = Object.keys(webpackConfig.entry);
       if (keys.length > 1) {
-        const selectedKeys = deasyncPromise(
-          inquirer.prompt([
-            Object.assign(
-            {
-              type: 'checkbox',
-              message: 'Please select your entry pages',
-              name: 'pages',
-              choices: keys.map(v => ({
-                name: v,
-              })),
-              validate: v => {
-                return v.length >= 1 || 'Please choose at least one';
-              },
-              pageSize: 18,
-            }, isPlainObject(options.selectEntry)
-                ? options.selectEntry
-                : {}),
-          ]),
-        );
+        const selectedKeys = inquirer.prompt([
+          Object.assign(
+          {
+            type: 'checkbox',
+            message: 'Please select your entry pages',
+            name: 'pages',
+            choices: keys.map(v => ({
+              name: v,
+            })),
+            validate: v => {
+              return v.length >= 1 || 'Please choose at least one';
+            },
+            pageSize: 18,
+          }, isPlainObject(options.selectEntry)
+              ? options.selectEntry
+              : {}),
+        ]);
+        console.log('selectedKeys', selectedKeys);
         keys.forEach(key => {
           if (!selectedKeys.pages.includes(key)) {
             delete webpackConfig.entry[key];
@@ -245,15 +244,15 @@ ${errors.join('\n')}
     }
 
     if (options.splitChunks) {
-      webpackConfig.optimization.splitChunks(
-        isPlainObject(options.splitChunks)
-          ? options.splitChunks
-          : {
-              chunks: 'all',
-              name: 'vendors',
-              minChunks: 2,
-            },
-      );
+      const splitChunksOpts = isPlainObject(options.splitChunks)
+        ? options.splitChunks
+        : {
+            chunks: 'all',
+            name: 'vendors',
+            minChunks: 2,
+          }
+      // ts-ignore
+      webpackConfig.optimization.splitChunks(splitChunksOpts as any);
     }
   });
 
