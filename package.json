@@ -1,6 +1,6 @@
 {
   "name": "umi-plugin-mpa",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "MPA(multiple-page application) plugin for umi.",
   "repository": "umijs/umi-plugin-mpa",
   "main": "dist/index.js",
