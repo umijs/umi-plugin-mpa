@@ -63,7 +63,7 @@ describe('schema', () => {
     })).toEqual(true);
   });
 
-  it('selectEntry', () => {
+  it.skip('selectEntry', () => {
     // boolean
     expect(ajv.validate(schema, {
       selectEntry: true,
