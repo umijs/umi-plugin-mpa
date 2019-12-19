@@ -7,7 +7,6 @@ import schema from './schema';
 
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const assert = require('assert');
-const deasyncPromise = require('deasync-promise');
 const inquirer = require('inquirer');
 const semver = require('semver');
 
@@ -120,6 +119,7 @@ ${errors.join('\n')}
     if (isDev && options.selectEntry) {
       const keys = Object.keys(webpackConfig.entry);
       if (keys.length > 1) {
+        const deasyncPromise = require('deasync-promise');
         const selectedKeys = deasyncPromise(
           inquirer.prompt([
             Object.assign(
