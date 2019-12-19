@@ -17,7 +17,7 @@ interface IOption {
   html?: {
     template?: string,
   },
-  // selectEntry?: boolean | object,
+  selectEntry?: boolean | object,
 }
 
 interface IEntry {
